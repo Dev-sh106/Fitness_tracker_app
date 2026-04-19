@@ -96,9 +96,12 @@ class _ActivityTrackerScreenState extends State<ActivityTrackerScreen> {
                 );
               },
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showAddActivityDialog,
-        child: const Icon(Icons.add),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 80.0),
+        child: FloatingActionButton(
+          onPressed: _showAddActivityDialog,
+          child: const Icon(Icons.add),
+        ),
       ),
     );
   }
