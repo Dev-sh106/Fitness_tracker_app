@@ -1,15 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'providers/theme_provider.dart';
+import 'providers/fitness_provider.dart';
+
+import 'screens/splash_screen.dart';
 import 'screens/main_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/about_screen.dart';
 import 'screens/tip_detail_screen.dart';
 
-// Global ValueNotifier for ThemeMode
-final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
-
 void main() {
-  runApp(const FitnessTrackerApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => FitnessProvider()),
+      ],
+      child: const FitnessTrackerApp(),
+    ),
+  );
 }
 
 class FitnessTrackerApp extends StatelessWidget {
@@ -17,18 +28,18 @@ class FitnessTrackerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<ThemeMode>(
-      valueListenable: themeNotifier,
-      builder: (_, ThemeMode currentMode, __) {
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
         return MaterialApp(
           title: 'Fitness Tracker & BMI Analyzer',
           debugShowCheckedModeBanner: false,
-          themeMode: currentMode,
+          themeMode: themeProvider.themeMode,
           theme: _buildLightTheme(),
           darkTheme: _buildDarkTheme(),
           initialRoute: '/',
           routes: {
-            '/': (context) => const MainScreen(),
+            '/': (context) => const SplashScreen(),
+            '/main': (context) => const MainScreen(),
             '/profile': (context) => const ProfileScreen(),
             '/settings': (context) => const SettingsScreen(),
             '/about': (context) => const AboutScreen(),
@@ -45,11 +56,10 @@ class FitnessTrackerApp extends StatelessWidget {
       brightness: Brightness.light,
       colorScheme: ColorScheme.fromSeed(
         brightness: Brightness.light,
-        seedColor: const Color(0xFF2196F3), // Vibrant Blue
+        seedColor: const Color(0xFF2196F3),
         primary: const Color(0xFF2196F3),
-        secondary: const Color(0xFFFF4081), // Pinkish Red for pop
+        secondary: const Color(0xFFFF4081),
         surface: Colors.white,
-        background: const Color(0xFFF0F4F8), // Soft cool grayish blue
       ),
       scaffoldBackgroundColor: const Color(0xFFF0F4F8),
       cardTheme: CardThemeData(
@@ -69,7 +79,7 @@ class FitnessTrackerApp extends StatelessWidget {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: Color(0xFF1E293B), // Dark slate text for AppBar
+        foregroundColor: Color(0xFF1E293B),
         iconTheme: IconThemeData(color: Color(0xFF1E293B)),
         titleTextStyle: TextStyle(
           color: Color(0xFF1E293B),
@@ -93,10 +103,9 @@ class FitnessTrackerApp extends StatelessWidget {
       colorScheme: ColorScheme.fromSeed(
         brightness: Brightness.dark,
         seedColor: const Color(0xFF64B5F6),
-        primary: const Color(0xFF64B5F6), // Lighter blue for dark mode
-        secondary: const Color(0xFFFF80AB), // Lighter pink
-        surface: const Color(0xFF1E293B), // Slate dark
-        background: const Color(0xFF0F172A), // Very dark slate
+        primary: const Color(0xFF64B5F6),
+        secondary: const Color(0xFFFF80AB),
+        surface: const Color(0xFF1E293B),
       ),
       scaffoldBackgroundColor: const Color(0xFF0F172A),
       cardTheme: CardThemeData(

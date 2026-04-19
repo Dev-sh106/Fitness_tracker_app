@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../main.dart'; // import the global notifier
+import 'package:provider/provider.dart';
+import '../providers/theme_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -8,10 +9,9 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
-      body: ValueListenableBuilder<ThemeMode>(
-        valueListenable: themeNotifier,
-        builder: (context, currentMode, child) {
-          final isDarkMode = currentMode == ThemeMode.dark;
+      body: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          final isDarkMode = themeProvider.themeMode == ThemeMode.dark;
 
           return ListView(
             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -28,7 +28,12 @@ class SettingsScreen extends StatelessWidget {
                   child: Icon(Icons.notifications_active, color: Theme.of(context).colorScheme.primary),
                 ),
                 value: true,
-                onChanged: (bool value) {},
+                onChanged: (bool value) {
+                  // TODO: Implement actual local notifications
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Notifications are simulated for now.')),
+                  );
+                },
               ),
               const Divider(),
               SwitchListTile(
@@ -47,7 +52,7 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 value: isDarkMode,
                 onChanged: (bool value) {
-                  themeNotifier.value = value ? ThemeMode.dark : ThemeMode.light;
+                  themeProvider.toggleTheme(value);
                 },
               ),
               const Divider(),

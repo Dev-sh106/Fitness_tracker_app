@@ -1,7 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class AppDrawer extends StatelessWidget {
+class AppDrawer extends StatefulWidget {
   const AppDrawer({Key? key}) : super(key: key);
+
+  @override
+  State<AppDrawer> createState() => _AppDrawerState();
+}
+
+class _AppDrawerState extends State<AppDrawer> {
+  String _name = 'Fitness Enthusiast';
+  String _email = 'user@fitness.app';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _name = prefs.getString('user_name') ?? 'Fitness Enthusiast';
+      _email = prefs.getString('user_email') ?? 'user@fitness.app';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -9,8 +32,8 @@ class AppDrawer extends StatelessWidget {
       child: Column(
         children: [
           UserAccountsDrawerHeader(
-            accountName: const Text('Fitness Enthusiast'),
-            accountEmail: const Text('user@fitness.app'),
+            accountName: Text(_name),
+            accountEmail: Text(_email),
             currentAccountPicture: CircleAvatar(
               backgroundColor: Theme.of(context).colorScheme.surface,
               child: Icon(
@@ -28,7 +51,7 @@ class AppDrawer extends StatelessWidget {
             title: const Text('Profile'),
             onTap: () {
               Navigator.pop(context); // Close drawer
-              Navigator.pushNamed(context, '/profile');
+              Navigator.pushNamed(context, '/profile').then((_) => _loadProfile());
             },
           ),
           ListTile(
